@@ -1,0 +1,75 @@
+<doctype html>
+<head>
+    <html style="background-color:#ffffff">
+    <link rel="icon" type="image/png" href="https://dl.dropboxusercontent.com/u/95202067/blue_logo.png">
+    <script src="http://d3js.org/d3.v2.js"></script>
+</head>
+<body>
+<div style="position:absolute; min-width:1200px; min-height:535px; width:99%;">
+    <title>Bucket Manager</title>
+    <div id="title_bar" style="position:absolute; top:10px; left:15px; width:700px; height:60px;">
+        <img src="https://dl.dropboxusercontent.com/u/95202067/adaptly_logo_web600px.png" style="width:200px;">
+    </div>
+    <div id="keywords" style="position:absolute; top:80px; left:15px; width:700px; height:450px; border:1px solid blue;">
+        <div id="plot_controller" style="position:absolute; left:0px; width:200px; height:100%; border:1px solid red;">
+        <table>
+            <tr height=112><td style="vertical-align:middle">
+                <img src="" style="width:200px;">
+            </td></tr>
+            <tr height=112 valign="middle"><td style="vertical-align:middle">
+                <img src="" style="width:200px;">
+            </td></tr>
+            <tr height=112 valign="middle"><td style="vertical-align:middle">
+                <img src="" style="width:200px;">
+            </td></tr>
+            <tr height=112 valign="middle"><td style="vertical-align:middle">
+                <img src="" style="width:200px;">
+            </td></tr>
+        </table>
+        </div>
+        <div id="keyword_plot" style="position:absolute; right:0px; width:480; height:100%; border:1px solid red;">
+        </div>
+    </div>
+    <div id="bucket" style="position:absolute; top:20px; right:20px; width:430px; height:510px;">
+        <div id="edit_bucket" style="position:absolute; top:0px; height:350; width:100%;">
+            <font size="4" face="HELVETICA" color="#000000">Bucket:</font>
+            <select id="bucket_menu" style="margin-left:15px; width:300px;">
+                {% for bucket_name in bucket_list %}
+                    <option value={{ bucket_name }}>{{ bucket_name }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="New"><br/>
+            <div id="keyword_bubbles" style="margin-top:5px; height:250;">
+            </div>
+            <input type="text" size=53 name="keyword" id="keyword"><input style="margin-left:7px;" type="submit" value="Add">
+            <div align="center" style="position:absolute; left:40px; bottom:0px; height:40px; width:350; border-radius:15px; background-color:#00b0d8;">
+                <span style="position:relative; top:10px;"><font size="5" face="HELVETICA" color="#FFFFFF">Save Bucket and Re-Plot</font></span>
+            </div>
+        </div>
+        <div id="bucket_stats" style="position:absolute; bottom:0px; height:150; width:100%;">
+        <table>
+            <tr height=70>
+                <td width=215 align="center">
+                    <font size="3" face="HELVETICA" color="#000000">reach</font><br/>
+                    <font size="5" face="HELVETICA" color="#00b0d8">{{ selected_bucket["REACH__"] }}</font>
+                </td>
+                <td width=215 align="center">
+                    <font size="3" face="HELVETICA" color="#000000">cohesion</font><br/>
+                    <font size="5" face="HELVETICA" color="#00b0d8">{{ selected_bucket["COHESION__"] }}</font>
+                </td>
+            </tr>
+            <tr height=70>
+                <td width=215 align="center">
+                    <font size="3" face="HELVETICA" color="#000000">size (max 50)</font><br/>
+                    <font size="5" face="HELVETICA" color="#00b0d8">{{ selected_bucket["SIZE__"] }}</font>
+                </td>
+                <td width=215 align="center">
+                    <font size="3" face="HELVETICA" color="#000000">spread</font><br/>
+                    <font size="5" face="HELVETICA" color="#00b0d8">{{ selected_bucket["SPREAD__"] }}</font>
+                </td>
+            </tr>
+        </table>
+        </div>
+    </div>
+</div>
+</body>

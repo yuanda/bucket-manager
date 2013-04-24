@@ -13,5 +13,6 @@ blinker==1.2
 itsdangerous==0.17
 passlib==1.6.1
 psycopg2==2.4.6
+py2neo==1.5
 storm==0.19
 wsgiref==0.1.2
