@@ -48,7 +48,11 @@ def checkAuth():
 def show_bucket():
 ##    checkAuth()
 
-    bucket_list = getBuckets()
+    if not 'bucket_list' in session:
+        bucket_list = getBuckets()
+        session['bucket_list'] = bucket_list
+    else:
+        bucket_list = session['bucket_list']
 
     if request.method == 'GET':
         selected_bucket = choice(bucket_list)
