@@ -33,15 +33,20 @@
     <div id="bucket" style="position:absolute; top:20px; right:20px; width:430px; height:510px;">
         <div id="edit_bucket" style="position:absolute; top:0px; height:350; width:100%;">
             <font size="4" face="HELVETICA" color="#000000">Bucket:</font>
-            <select id="bucket_menu" style="margin-left:15px; width:300px;">
+            <select id="bucket_menu" style="margin-left:10px; width:297px;">
                 {% for bucket_name in bucket_list %}
                     <option value={{ bucket_name }}>{{ bucket_name }}</option>
                 {% endfor %}
             </select>
-            <input type="submit" value="New"><br/>
+            <div align="center" style="position:absolute; top:0px; right:5px; height:20px; width:40; border-radius:5px; background-color:#00b0d8;">
+                <span style="position:relative; top:2px;"><font size="3" face="HELVETICA" color="#FFFFFF">New</font></span>
+            </div>
             <div id="keyword_bubbles" style="margin-top:5px; height:250;">
             </div>
-            <input type="text" size=53 name="keyword" id="keyword"><input style="margin-left:7px;" type="submit" value="Add">
+            <input type="text" size=52 name="keyword" id="keyword">
+            <div align="center" style="position:absolute; top:277px; right:5px; height:20px; width:40; border-radius:5px; background-color:#00b0d8;">
+                <span style="position:relative; top:2px;"><font size="3" face="HELVETICA" color="#FFFFFF">Add</font></span>
+            </div>
             <div align="center" style="position:absolute; left:40px; bottom:0px; height:40px; width:350; border-radius:15px; background-color:#00b0d8;">
                 <span style="position:relative; top:10px;"><font size="5" face="HELVETICA" color="#FFFFFF">Save Bucket and Re-Plot</font></span>
             </div>
