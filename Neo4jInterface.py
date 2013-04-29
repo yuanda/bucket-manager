@@ -34,72 +34,92 @@ def submit_query(db, query, row_handler=None):
             print type(e), e.message
 
 
+## returns a BucketStructure object for the given bucket name
 def loadBucket(bucket_name):
     db = getDBhandle()
 
-    ## bucket info
-
-    bucket_stats = []
+    bucket = []
     def bucket_stat_handler(row):
-        bucket_stats.append(row[0].get_properties())
+        bucket_structure = BucketStructure()
+        bucket_structure.loadStructure(row[0].get_properties())
+        bucket.append(bucket_structure)
 
-    query = 'START n=node:buckets("bucket:' + re.sub('[ ()]', '?', bucket_name) + '") ' \
-          + 'WHERE has(n.name) ' \
-          + 'RETURN n' \
+    query = 'START b=node:buckets("bucket:' + re.sub('[ ()]', '?', bucket_name) + '") ' \
+          + 'WHERE has(b.NAME__) ' \
+          + 'RETURN b' \
 
     submit_query(db, query, row_handler=bucket_stat_handler)
-    bucket_stats = bucket_stats[0]
+    bucket = bucket[0]
 
-    ## keyword info
-
-    bucket_contents = []
-    def keyword_handler(row):
-        bucket_contents.append(row[0].get_properties())
-
-    query = 'START n=node:buckets("bucket:' + re.sub('[ ()]', '?', bucket_name) + '") ' \
-          + 'MATCH n-->w ' \
-          + 'WHERE has(w.name) ' \
-          + 'RETURN w'
-
-    submit_query(db, query, row_handler=keyword_handler)
-
-    return bucket_stats, bucket_contents
+    return bucket
 
 
-def saveBucket(bucket_name, bucket_contents):
+## saves a bucket with the given name, tags, and structure
+## where tags are given as a str list and
+## bucket_structure is given as a BucketStructure object
+def saveBucket(bucket_name, tags, bucket_structure):
     db = getDBhandle()
 
+    ## finds or creates unconnected bucket node
     bucket_index = db.get_or_create_index(neo4j.Node, "buckets")
-    bucket_root = bucket_index.get_or_create("bucket", bucket_name, {"name": bucket_name})
+    bucket_root = bucket_index.get_or_create("bucket", bucket_name, bucket_structure.dumpStructure())
     bucket_root.isolate()
 
+    ## finds or creates tag nodes, connecting to bucket node
+    tag_index = db.get_or_create(neo4j.Node, "tags")
+    for tag in tags:
+        tag_node = tag_index.get_or_create("tag", tag, {})
+        tag_node.create_path("TAGS", bucket_root)
+
+    ## finds or creates word nodes, connecting to bucket node
     word_index = db.get_or_create_index(neo4j.Node, "words")
-    for bucket_word in bucket_contents:
-        word_node = bucket_index.get_or_create("word", bucket_word["name"], bucket_word)
+    for bucket_word in bucket_structure.getWords():
+        word_node = bucket_index.get_or_create("word", bucket_word, {})
         bucket_root.create_path("CONTAINS", word_node)
 
 
-def getBuckets():
+## returns a list of all bucket names
+## filters to include only buckets with
+## all given tags iff tags != None
+def getBuckets(tags=[]):
     db = getDBhandle()
 
-    bucket_names = []
+    bucket_names = set([])
     def row_handler(row):
-        bucket_names.append(str(row[0]))
+        bucket_names.add(str(row[0]))
 
-    query = 'START n=node:buckets("bucket:*") where has(n.name) return n.name'
-    submit_query(db, query, row_handler=row_handler)
+    ## filtered list
+    if tags:
+        tmp_names = set([])
+        bucket_names = set([])
+        def row_handler(row):
+            tmp_names.add(str(row[0]))
+
+        for tag in tags:
+            query = 'START t=node:tags("tag:' + tag + '") ' \
+                  + 'MATCH t-[:TAGS]->b ' \
+                  + 'RETURN b.NAME__;'
+            submit_query(db, query, row_handler=row_handler)
+
+            if bucket_names:
+                bucket_names = bucket_names & tmp_names
+            else:
+                bucket_names = tmp_names
+            tmp_names = set([])
+
+        bucket_names = list(bucket_names)
+
+    ## all buckets
+    else:
+        bucket_names = []
+        def row_handler(row):
+            bucket_names.append(str(row[0]))
+        query = 'START b=node:buckets("bucket:*") where has(b.name) return b.name'
+        submit_query(db, query, row_handler=row_handler)
 
     bucket_names.sort()
     return bucket_names
 
-
-def deleteBucket(bucket_name):
-    db = getDBhandle()
-
-    bucket_index = db.get_or_create_index(neo4j.Node, "buckets")
-    bucket_root = bucket_index.get_or_create("bucket", bucket_name, {"name": bucket_name})
-    bucket_root.isolate()
-    bucket_root.delete()
 
 
 if __name__ == "__main__":
@@ -111,8 +131,5 @@ if __name__ == "__main__":
         bucket_name = ' '.join(argv[1:])
         print bucket_name
         print loadBucket(bucket_name)
-    else:
-        saveBucket("colors", [{"name":"red"}, {"name":"blue"}, {"name":"yellow"}, {"name":"green"}])
-        print loadBucket("colors")
 
 ##    print getBuckets()

@@ -5,50 +5,53 @@
     <script src="http://d3js.org/d3.v2.js"></script>
 </head>
 <body>
-<div style="position:absolute; min-width:1200px; min-height:535px; width:99%;">
+<div style="position:absolute; min-width:1200px; height:530px; width:99%;">
     <title>Bucket Manager</title>
-    <div id="title_bar" style="position:absolute; top:10px; left:15px; width:700px; height:60px;">
-        <img src="https://dl.dropboxusercontent.com/u/95202067/adaptly_logo_web600px.png" style="width:200px;">
-    </div>
-    <div id="keywords" style="position:absolute; top:80px; left:15px; width:700px; height:450px;">
-        <div id="plot_controller" style="position:absolute; left:0px; width:200px; height:100%;">
+    <div id="menu_bar" style="position:absolute; top:10px; left:15px; width:250px; height:550px;">
+        <div id="title_bar" style="position:absolute; top:10px; left:5px; width:100%; height:100px;">
+            <img src="https://dl.dropboxusercontent.com/u/95202067/adaptly_logo_web600px.png" style="width:200px;">
+        </div>
+        <div id="plot_controller" style="position:absolute; top:70px; left:10px; width:200px; height:480;">
         <table>
-            <tr height=112><td style="vertical-align:middle">
+            <tr height=120><td style="vertical-align:middle">
                 <img src="https://dl.dropboxusercontent.com/u/95202067/word_cloud.png" style="width:200px;">
             </td></tr>
-            <tr height=112 valign="middle"><td style="vertical-align:middle">
+            <tr height=120 valign="middle"><td style="vertical-align:middle">
                 <img src="https://dl.dropboxusercontent.com/u/95202067/relation_web.png" style="width:200px;">
             </td></tr>
-            <tr height=112 valign="middle"><td style="vertical-align:middle">
+            <tr height=120 valign="middle"><td style="vertical-align:middle">
                 <img src="https://dl.dropboxusercontent.com/u/95202067/relevance_list.png" style="width:200px;">
             </td></tr>
-            <tr height=112 valign="middle"><td style="vertical-align:middle">
+            <tr height=120 valign="middle"><td style="vertical-align:middle">
                 <img src="https://dl.dropboxusercontent.com/u/95202067/export.png" style="width:200px;">
             </td></tr>
         </table>
         </div>
-        <div id="keyword_plot" style="position:absolute; right:0px; width:480; height:100%;">
-        </div>
     </div>
-    <div id="bucket" style="position:absolute; top:20px; right:20px; width:430px; height:510px;">
-        <div id="edit_bucket" style="position:absolute; top:0px; height:350; width:100%;">
-            <font size="4" face="HELVETICA" color="#000000">Bucket:</font>
-            <select id="bucket_menu" style="margin-left:10px; width:300px;">
-                {% for bucket_name in bucket_list %}
-                    <option value={{ bucket_name }}>{{ bucket_name }}</option>
-                {% endfor %}
-            </select>
-            <div align="center" style="position:absolute; top:2px; right:5px; height:20px; width:40; border-radius:5px; background-color:#00b0d8;">
-                <span style="position:relative; line-height:20px;"><font size="3" face="HELVETICA" color="#FFFFFF">New</font></span>
+    <div id="keyword_plot" style="position:relative; margin-left:24%; top:50px; width:450; height:475px; border:1px solid blue;">
+    </div>
+    <div id="bucket" style="position:absolute; top:20px; right:20px; width:430px; height:550px;">
+        <div id="edit_bucket" style="position:absolute; top:0px; height:360px; width:100%;">
+            <div id="bucket_line" style="position:absolute; top:2px; width:100%; height:20px;">
+                <font size="4" face="HELVETICA" color="#000000">Bucket:</font>
+                <select id="bucket_menu" style="position:absolute; right:70px; width:285px;">
+                    {% for bucket_name in bucket_list %}
+                        <option value={{ bucket_name }}>{{ bucket_name }}</option>
+                    {% endfor %}
+                </select>
+                <div align="center" style="position:absolute; right:5px; top:0px; height:20px; width:60px; border-radius:5px; background-color:#00b0d8;">
+                    <span style="position:relative; line-height:20px;"><font size="3" face="HELVETICA" color="#FFFFFF">New</font></span>
+                </div>
+                <br/>
             </div>
-            <div id="keyword_bubbles" style="margin-top:5px; height:250;">
+            <div id="tag_line" style="position:absolute; top:35px; height:20px; width:100%;">
+                <font size="4" face="HELVETICA" color="#000000">Tags:</font>
+                <input type="text" style="position:absolute; right:70px; width:285px;" name="keyword" id="keyword">
+                <div align="center" style="position:absolute; right:5px; top:0px; height:20px; width:60px; border-radius:5px; background-color:#00b0d8;">
+                    <span style="position:relative; line-height:20px;"><font size="3" face="HELVETICA" color="#FFFFFF">Filter</font></span>
+                </div>
             </div>
-            <input type="text" style="width:375px;" name="keyword" id="keyword">
-            <div align="center" style="position:absolute; top:280px; right:5px; height:20px; width:40; border-radius:5px; background-color:#00b0d8;">
-                <span style="position:relative; line-height:20px;"><font size="3" face="HELVETICA" color="#FFFFFF">Add</font></span>
-            </div>
-            <div align="center" style="position:absolute; left:40px; bottom:0px; height:40px; width:350; border-radius:15px; background-color:#00b0d8;">
-                <span style="position:relative; line-height:40px;"><font size="5" face="HELVETICA" color="#FFFFFF">Save Bucket and Re-Plot</font></span>
+            <div id="keyword_list" style="position:absolute; top:70px; height:300; width:100%; border:1px solid green;">
             </div>
         </div>
         <div id="bucket_stats" style="position:absolute; bottom:0px; height:150; width:100%;">
