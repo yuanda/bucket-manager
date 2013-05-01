@@ -19,6 +19,7 @@ from random import choice
 ## local modules
 from Neo4jInterface import *
 from AuthInterface import *
+from BucketStructure import *
 
 
 app = Flask(__name__)
@@ -54,25 +55,57 @@ def show_bucket():
     else:
         bucket_list = session['bucket_list']
 
-    if request.method == 'GET':
+    if not 'selected_bucket' in session or \
+       not session['selected_bucket'] in bucket_list:
         selected_bucket = choice(bucket_list)
+        session['selected_bucket'] = selected_bucket
+    else:
+        selected_bucket = session['selected_bucket']
 
-##    bucket_stats, bucket_contents = loadBucket(selected_bucket)
+    bucket_data = loadBucket(selected_bucket)
+    keywords = bucket_data.getWords()
+    edges = bucket_data.dumpEdges()
+    centrality = bucket_data.dumpCentrality()
 
-    bucket_contents = [{'NAME__':'science', 'CENTRALITY__':.1, 'sciences':.05, 'technology':.21}, \
-                       {'NAME__':'sciences', 'CENTRALITY__':.11, 'science':.05, 'technology':.19}, \
-                       {'NAME__':'technology', 'CENTRALITY__':.29, 'science':.21, 'sciences':.19}]
-    bucket_stats = {'NAME__':'Science/Technology', 'REACH__':3511000, 'COHESION__':.87, 'SPREAD__':2.31, 'SIZE__':len(bucket_contents)}
+    bucket_stats = bucket_data.dumpStats()
+    bucket_stats.update({'REACH__':'OVER 9000!', 'SIZE__':len(keywords)})
 
-##    return json.dumps([bucket_stats, bucket_contents])
-    return render_template('show_bucket.html', selected_bucket=bucket_stats, bucket_list=bucket_list, bucket_contents=bucket_contents)
+    return render_template('show_bucket.html', selected_bucket=bucket_stats, \
+                                               bucket_list=bucket_list, \
+                                               keywords=keywords, \
+                                               keyword_centrality=centrality, \
+                                               keyword_edges=edges \
+                          )
 
 
 @app.route('/save/', methods=['POST'])
 def save_bucket():
 ##    checkAuth()
 
-    ## TODO: implement this method
+    print 'made it here'
+    bucket_name = request.form['new_bucket_name']
+    print 'and now here'
+    tags = request.form['new_bucket_tags']
+    print 'and now here too'
+    keywords = request.form['new_bucket_contents']
+
+    tags = map(lambda k: k.strip(), tags.split(','))
+    keywords = map(lambda k: k.strip(), keywords.split(','))
+
+    print bucket_name
+    print tags
+    print keywords
+
+##    new_bucket = BucketStructure(keywords)
+##    new_bucket.calculateEdges()
+##    saveBucket(bucket_name, tags, new_bucket)
+    return redirect('/')
+
+
+@app.route('/filter/', methods=['POST'])
+def filter_bucket_list():
+##    checkAuth()
+    ## TODO implement this method
     return
 
 

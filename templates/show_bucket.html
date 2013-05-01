@@ -31,6 +31,30 @@
     <div id="keyword_plot" style="position:relative; margin-left:24%; top:50px; width:450; height:475px; border:1px solid blue;">
     </div>
     <div id="bucket" style="position:absolute; top:20px; right:20px; width:430px; height:550px;">
+        <div id="new_bucket" style="position:absolute; top:-500px; height:360px; width:430px; left:0px; z-index:9000; background-color:#ffffff;">
+            <form id="new_bucket_form" action='/save/' method='post'>
+                <div id="new_bucket_name_line" style="position:absolute; top:10px; height:20px; width:100%; left:0px;">
+                    <font size="4" face="HELVETICA" color="#000000">Name:</font>
+                    <input type="text" style="position:absolute; right:10px; width:350px;" name="new_bucket_name">
+                </div>
+                <div id="new_bucket_tag_line" style="position:absolute; top:40px; height:20px; width:100%; left:0px;">
+                    <font size="4" face="HELVETICA" color="#000000">Tags:</font>
+                    <input type="text" style="position:absolute; right:10px; width:350px;" name="new_bucket_tags">
+                </div>
+                <div id="new_bucket_content_line" style="position:absolute; top:70px; height:250px; width:100%; left:0px;">
+                    <font size="4" face="HELVETICA" color="#000000">Contents:</font><br/>
+                    <textarea name="new_bucket_contents" rows=15 cols=50 style="width:420px; resize:none;"></textarea><br/>
+                </div>
+                <div id="new_bucket_button_line" style="position:absolute; bottom:10px; height:20px; width:100%; left:0px;">
+                    <div align="center" onclick="submitForm('new_bucket_form');" style="position:absolute; left:0px; top:0px; height:20px; width:120px; border-radius:5px; background-color:#00b0d8;">
+                        <span style="position:relative; line-height:20px;"><font size="3" face="HELVETICA" color="#FFFFFF">Save Bucket</font></span>
+                    </div>
+                    <div align="center" onclick="drawMenu(false);" style="position:absolute; right:10px; top:0px; height:20px; width:120px; border-radius:5px; background-color:#00b0d8;">
+                        <span style="position:relative; line-height:20px;"><font size="3" face="HELVETICA" color="#FFFFFF">Nevermind</font></span>
+                    </div>
+                </div>
+            </form>
+        </div>
         <div id="edit_bucket" style="position:absolute; top:0px; height:360px; width:100%;">
             <div id="bucket_line" style="position:absolute; top:2px; width:100%; height:20px;">
                 <font size="4" face="HELVETICA" color="#000000">Bucket:</font>
@@ -39,7 +63,7 @@
                         <option value={{ bucket_name }}>{{ bucket_name }}</option>
                     {% endfor %}
                 </select>
-                <div align="center" style="position:absolute; right:5px; top:0px; height:20px; width:60px; border-radius:5px; background-color:#00b0d8;">
+                <div align="center" onclick="drawMenu(true);" style="position:absolute; right:5px; top:0px; height:20px; width:60px; border-radius:5px; background-color:#00b0d8;">
                     <span style="position:relative; line-height:20px;"><font size="3" face="HELVETICA" color="#FFFFFF">New</font></span>
                 </div>
                 <br/>
@@ -51,7 +75,7 @@
                     <span style="position:relative; line-height:20px;"><font size="3" face="HELVETICA" color="#FFFFFF">Filter</font></span>
                 </div>
             </div>
-            <div id="keyword_list" style="position:absolute; top:70px; height:300; width:100%; border:1px solid green;">
+            <div id="keyword_list" style="position:absolute; top:70px; height:300; width:100%;">
             </div>
         </div>
         <div id="bucket_stats" style="position:absolute; bottom:0px; height:150; width:100%;">
@@ -62,8 +86,8 @@
                     <font size="5" face="HELVETICA" color="#00b0d8">{{ selected_bucket["REACH__"] }}</font>
                 </td>
                 <td width=215 align="center">
-                    <font size="3" face="HELVETICA" color="#000000">cohesion</font><br/>
-                    <font size="5" face="HELVETICA" color="#00b0d8">{{ selected_bucket["COHESION__"] }}</font>
+                    <font size="3" face="HELVETICA" color="#000000">---</font><br/>
+                    <font size="5" face="HELVETICA" color="#00b0d8">---</font>
                 </td>
             </tr>
             <tr height=70>
@@ -72,12 +96,33 @@
                     <font size="5" face="HELVETICA" color="#00b0d8">{{ selected_bucket["SIZE__"] }}</font>
                 </td>
                 <td width=215 align="center">
-                    <font size="3" face="HELVETICA" color="#000000">spread</font><br/>
-                    <font size="5" face="HELVETICA" color="#00b0d8">{{ selected_bucket["SPREAD__"] }}</font>
+                    <font size="3" face="HELVETICA" color="#000000">---</font><br/>
+                    <font size="5" face="HELVETICA" color="#00b0d8">----</font>
                 </td>
             </tr>
         </table>
         </div>
     </div>
+    <script type="text/javascript">
+        // adds new bucket menu
+        var new_bucket_menu = d3.select("#new_bucket");
+
+
+        // functions
+
+        // shows/hides menu as specified
+        function drawMenu(is_shown) {
+            if (is_shown) {
+                new_bucket_menu.transition().style("top", 0);
+            } else {
+                new_bucket_menu.transition().style("top", -500);
+            }
+        }
+
+        // submits new bucket form
+        function submitForm(formid) {
+            document.getElementById(formid).submit()
+        }
+    </script>
 </div>
 </body>

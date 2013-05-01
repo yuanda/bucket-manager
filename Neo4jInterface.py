@@ -4,6 +4,7 @@ import re
 
 ## local modules
 from WordRelations import *
+from BucketStructure import *
 
 
 ## error handler for cypher queries
@@ -62,19 +63,21 @@ def saveBucket(bucket_name, tags, bucket_structure):
 
     ## finds or creates unconnected bucket node
     bucket_index = db.get_or_create_index(neo4j.Node, "buckets")
-    bucket_root = bucket_index.get_or_create("bucket", bucket_name, bucket_structure.dumpStructure())
+    bucket_contents = bucket_structure.dumpStructure()
+    bucket_contents.update({'NAME__':bucket_name})
+    bucket_root = bucket_index.get_or_create("bucket", bucket_name, bucket_contents)
     bucket_root.isolate()
 
     ## finds or creates tag nodes, connecting to bucket node
-    tag_index = db.get_or_create(neo4j.Node, "tags")
+    tag_index = db.get_or_create_index(neo4j.Node, "tags")
     for tag in tags:
-        tag_node = tag_index.get_or_create("tag", tag, {})
+        tag_node = tag_index.get_or_create("tag", tag, {'NAME__':tag})
         tag_node.create_path("TAGS", bucket_root)
 
     ## finds or creates word nodes, connecting to bucket node
     word_index = db.get_or_create_index(neo4j.Node, "words")
     for bucket_word in bucket_structure.getWords():
-        word_node = bucket_index.get_or_create("word", bucket_word, {})
+        word_node = bucket_index.get_or_create("word", bucket_word, {'NAME__':bucket_word})
         bucket_root.create_path("CONTAINS", word_node)
 
 
@@ -98,6 +101,7 @@ def getBuckets(tags=[]):
         for tag in tags:
             query = 'START t=node:tags("tag:' + tag + '") ' \
                   + 'MATCH t-[:TAGS]->b ' \
+                  + 'WHERE has(b.NAME__) ' \
                   + 'RETURN b.NAME__;'
             submit_query(db, query, row_handler=row_handler)
 
@@ -114,7 +118,7 @@ def getBuckets(tags=[]):
         bucket_names = []
         def row_handler(row):
             bucket_names.append(str(row[0]))
-        query = 'START b=node:buckets("bucket:*") where has(b.name) return b.name'
+        query = 'START b=node:buckets("bucket:*") WHERE has(b.NAME__) return b.NAME__'
         submit_query(db, query, row_handler=row_handler)
 
     bucket_names.sort()
@@ -127,9 +131,52 @@ if __name__ == "__main__":
 
 ##    db = getDBhandle()
 
-    if len(argv) > 1:
-        bucket_name = ' '.join(argv[1:])
-        print bucket_name
-        print loadBucket(bucket_name)
+##    if len(argv) > 1:
+##        bucket_name = ' '.join(argv[1:])
+##        print bucket_name
+##        print loadBucket(bucket_name)
 
 ##    print getBuckets()
+
+
+    x = BucketStructure(words=[ \
+                                  'cats', \
+                                  'cats kittens', \
+                                  'cats eye', \
+                                  'cats eyes', \
+                                  'kittens', \
+                                  'kitties', \
+                                  'stray cats', \
+                                  'kittens cats', \
+                                  'kitty', \
+                                  'kitty cats', \
+                                  'felines', \
+                                  'feline friends cat sanctuary', \
+                                  'tabby cat', \
+                                  'tabby cats', \
+                                  'tabby', \
+                                  'orange tabby cats', \
+                                  'house cat', \
+                                  'cat house', \
+                                  'cat toys', \
+                                  'calico cats', \
+                                  'tortoiseshell calico cats', \
+                                  'black cats', \
+                                  'siamese cats', \
+                                  'siamese cat', \
+                                  'cat lovers we love our pets', \
+                                  'cat lover', \
+                                  'cat lovers day', \
+                                  'cat lovers', \
+                                  'i love cats', \
+                                  'i love my cat', \
+                                  'we love cats', \
+                                  'petling cat', \
+                                  'cat petting', \
+                                  'petting cats', \
+                                  'petting my cat', \
+                                  'petting my cats'
+                              ])
+    x.calculateEdges()
+    saveBucket('Pets (Cats)', ['Animals', 'Pets'], x)
+
