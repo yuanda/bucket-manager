@@ -49,26 +49,34 @@ def checkAuth():
 def show_bucket():
 ##    checkAuth()
 
-    if not 'bucket_list' in session:
-        bucket_list = getBuckets()
-        session['bucket_list'] = bucket_list
-    else:
-        bucket_list = session['bucket_list']
+    bucket_list = getBuckets()
 
-    if not 'selected_bucket' in session or \
-       not session['selected_bucket'] in bucket_list:
-        selected_bucket = choice(bucket_list)
-        session['selected_bucket'] = selected_bucket
+    if request.method == 'GET':
+        if 'selected_bucket' in session and \
+           session['selected_bucket'] in bucket_list:
+            selected_bucket = session['selected_bucket']
+            del session['selected_bucket']
+            print 'out with the old!'
+        else:
+            selected_bucket = choice(bucket_list)
     else:
-        selected_bucket = session['selected_bucket']
+        selected_bucket = request.form['bucket_menu']
 
     bucket_data = loadBucket(selected_bucket)
-    keywords = bucket_data.getWords()
-    edges = bucket_data.dumpEdges()
-    centrality = bucket_data.dumpCentrality()
+    if bucket_data:
+        keywords = bucket_data.getWords()
+        edges = bucket_data.dumpEdges()
+        centrality = bucket_data.dumpCentrality()
+        bucket_stats = bucket_data.dumpStats()
+    else:
+        keywords = []
+        edges = []
+        centrality = []
+        bucket_stats = {}
 
-    bucket_stats = bucket_data.dumpStats()
-    bucket_stats.update({'REACH__':'OVER 9000!', 'SIZE__':len(keywords)})
+    bucket_stats.update({'SIZE__':len(keywords)})
+    if not 'REACH__' in bucket_stats:
+        bucket_stats['REACH__'] = 'unknown'
 
     return render_template('show_bucket.html', selected_bucket=bucket_stats, \
                                                bucket_list=bucket_list, \
@@ -82,23 +90,19 @@ def show_bucket():
 def save_bucket():
 ##    checkAuth()
 
-    print 'made it here'
-    bucket_name = request.form['new_bucket_name']
-    print 'and now here'
-    tags = request.form['new_bucket_tags']
-    print 'and now here too'
-    keywords = request.form['new_bucket_contents']
+    bucket_name = request.form['new_bucket_name'].strip()
+    tags = request.form['new_bucket_tags'].strip()
+    keywords = request.form['new_bucket_contents'].strip()
 
-    tags = map(lambda k: k.strip(), tags.split(','))
+    tags = map(lambda k: k.strip().lower(), tags.split(','))
     keywords = map(lambda k: k.strip(), keywords.split(','))
 
-    print bucket_name
-    print tags
-    print keywords
+    new_bucket = BucketStructure(keywords)
+    new_bucket.calculateEdges()
+    saveBucket(bucket_name, tags, new_bucket)
 
-##    new_bucket = BucketStructure(keywords)
-##    new_bucket.calculateEdges()
-##    saveBucket(bucket_name, tags, new_bucket)
+    session['selected_bucket'] = bucket_name
+
     return redirect('/')
 
 

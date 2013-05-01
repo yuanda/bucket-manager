@@ -50,7 +50,8 @@ def loadBucket(bucket_name):
           + 'RETURN b' \
 
     submit_query(db, query, row_handler=bucket_stat_handler)
-    bucket = bucket[0]
+    if bucket:
+        bucket = bucket[0]
 
     return bucket
 
@@ -64,7 +65,7 @@ def saveBucket(bucket_name, tags, bucket_structure):
     ## finds or creates unconnected bucket node
     bucket_index = db.get_or_create_index(neo4j.Node, "buckets")
     bucket_contents = bucket_structure.dumpStructure()
-    bucket_contents.update({'NAME__':bucket_name})
+    bucket_contents.update({'NAME__':bucket_name, 'TAGS__':', '.join(tags)})
     bucket_root = bucket_index.get_or_create("bucket", bucket_name, bucket_contents)
     bucket_root.isolate()
 

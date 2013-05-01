@@ -75,8 +75,8 @@ def phrase_dist(phrase0, phrase1, verbose=False):
     ## finds distance between every pairing
     ## of words from phrase0 to phrase1
     word_distances = {}
-    for word0 in phrase0.split():
-        for word1 in phrase1.split():
+    for word0 in phrase0.split(' '):
+        for word1 in phrase1.split(' '):
             this_distance = semantic_dist(word0, word1)
             if not this_distance:
                 this_distance = levenshtein_dist(word0, word1)+1
@@ -123,4 +123,4 @@ def phrase_dist(phrase0, phrase1, verbose=False):
 
 
 if __name__ == "__main__":
-    print phrase_dist('versailles garden window'.split(), 'chinese herb garden'.split())
+    print phrase_dist('diving', 'scuba', verbose=True)

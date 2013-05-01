@@ -57,12 +57,14 @@
         </div>
         <div id="edit_bucket" style="position:absolute; top:0px; height:360px; width:100%;">
             <div id="bucket_line" style="position:absolute; top:2px; width:100%; height:20px;">
-                <font size="4" face="HELVETICA" color="#000000">Bucket:</font>
-                <select id="bucket_menu" style="position:absolute; right:70px; width:285px;">
-                    {% for bucket_name in bucket_list %}
-                        <option value={{ bucket_name }}>{{ bucket_name }}</option>
-                    {% endfor %}
-                </select>
+                <form id="select_bucket_form" action="/" method="post">
+                    <font size="4" face="HELVETICA" color="#000000">Bucket:</font>
+                    <select name="bucket_menu" id="bucket_menu" onchange="submitForm('select_bucket_form');" style="position:absolute; right:70px; width:285px;">
+                        {% for bucket_name in bucket_list %}
+                            <option {% if selected_bucket['NAME__']==bucket_name %}selected{% endif %} value="{{ bucket_name }}">{{ bucket_name }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
                 <div align="center" onclick="drawMenu(true);" style="position:absolute; right:5px; top:0px; height:20px; width:60px; border-radius:5px; background-color:#00b0d8;">
                     <span style="position:relative; line-height:20px;"><font size="3" face="HELVETICA" color="#FFFFFF">New</font></span>
                 </div>
@@ -70,12 +72,13 @@
             </div>
             <div id="tag_line" style="position:absolute; top:35px; height:20px; width:100%;">
                 <font size="4" face="HELVETICA" color="#000000">Tags:</font>
-                <input type="text" style="position:absolute; right:70px; width:285px;" name="keyword" id="keyword">
+                <input type="text" value="{{ selected_bucket['TAGS__']  }}" style="position:absolute; right:70px; width:285px;" name="keyword" id="keyword">
                 <div align="center" style="position:absolute; right:5px; top:0px; height:20px; width:60px; border-radius:5px; background-color:#00b0d8;">
                     <span style="position:relative; line-height:20px;"><font size="3" face="HELVETICA" color="#FFFFFF">Filter</font></span>
                 </div>
             </div>
-            <div id="keyword_list" style="position:absolute; top:70px; height:300; width:100%;">
+            <div id="keyword_list" style="position:absolute; top:80px; height:290; width:100%;">
+                    <font size="3" face="HELVETICA" color="#00b0d8">{{ ',   '.join(keywords) }}</font>
             </div>
         </div>
         <div id="bucket_stats" style="position:absolute; bottom:0px; height:150; width:100%;">
@@ -93,7 +96,7 @@
             <tr height=70>
                 <td width=215 align="center">
                     <font size="3" face="HELVETICA" color="#000000">size (max 50)</font><br/>
-                    <font size="5" face="HELVETICA" color="#00b0d8">{{ selected_bucket["SIZE__"] }}</font>
+                    <font size="5" face="HELVETICA" color={% if selected_bucket["SIZE__"] <= 50 %}"#00b0d8"{% else %}"#e33c47"{% endif %}>{{ selected_bucket["SIZE__"] }}</font>
                 </td>
                 <td width=215 align="center">
                     <font size="3" face="HELVETICA" color="#000000">---</font><br/>
@@ -119,10 +122,11 @@
             }
         }
 
-        // submits new bucket form
+        // submits a form
         function submitForm(formid) {
             document.getElementById(formid).submit()
         }
+
     </script>
 </div>
 </body>
