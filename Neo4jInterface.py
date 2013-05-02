@@ -97,7 +97,7 @@ def getBuckets(tags=[]):
                   + 'WHERE has(b.NAME__) ' \
                   + 'RETURN b.NAME__;'
             tmp_names, metadata = submit_query(db, query)
-            tmp_names = map(lambda k: str(k[0]), tmp_names)
+            tmp_names = set(map(lambda k: str(k[0]), tmp_names))
 
             if bucket_names:
                 bucket_names = bucket_names & tmp_names

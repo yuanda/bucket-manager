@@ -74,7 +74,11 @@ def show_bucket():
         bucket_stats = bucket_data.dumpStats()
 
         centrality_scores = centrality.values()
-        topic_range = max(centrality_scores)
+        edge_scores = sorted(edges.values(), reverse=True)
+        nedges = len(edge_scores)
+
+        n_longest_edges = int(nedges/10)
+        topic_range = sum(edge_scores[0:n_longest_edges]) / float(n_longest_edges)
         cohesion = sum(centrality_scores) / len(centrality_scores)
 
     else:
@@ -126,7 +130,6 @@ def filter_bucket_list():
 
     tag_filter = filter(lambda j: j, map(lambda k: k.strip(), request.form['tags'].split(',')))
     if tag_filter:
-        print tag_filter
         session['tags'] = tag_filter
     return redirect('/')
 
