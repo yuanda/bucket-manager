@@ -101,8 +101,8 @@ def save_bucket():
     tags = request.form['new_bucket_tags'].strip()
     keywords = request.form['new_bucket_contents'].strip()
 
-    tags = map(lambda k: k.strip().lower(), tags.split(','))
-    keywords = map(lambda k: k.strip(), keywords.split(','))
+    tags = filter(lambda j: j, map(lambda k: k.strip().lower(), tags.split(',')))
+    keywords = filter(lambda j: j, map(lambda k: k.strip(), keywords.split(',')))
 
     new_bucket = BucketStructure(keywords)
     new_bucket.calculateEdges()
@@ -119,7 +119,7 @@ def filter_bucket_list():
     if 'tags' in session:
         del session['tags']
 
-    tag_filter = map(lambda k: k.strip(), request.form['tags'].split(','))
+    tag_filter = filter(lambda j: j, map(lambda k: k.strip(), request.form['tags'].split(',')))
     if tag_filter:
         print tag_filter
         session['tags'] = tag_filter
