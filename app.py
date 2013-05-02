@@ -49,7 +49,14 @@ def checkAuth():
 def show_bucket():
 ##    checkAuth()
 
-    bucket_list = getBuckets()
+
+    if 'tags' in session:
+        bucket_list = getBuckets(session['tags'])
+        del session['tags']
+    else:
+        bucket_list = getBuckets()
+    if not bucket_list:
+        bucket_list = ['---']
 
     if request.method == 'GET':
         if 'selected_bucket' in session and \
@@ -109,8 +116,14 @@ def save_bucket():
 @app.route('/filter/', methods=['POST'])
 def filter_bucket_list():
 ##    checkAuth()
-    ## TODO implement this method
-    return
+    if 'tags' in session:
+        del session['tags']
+
+    tag_filter = map(lambda k: k.strip(), request.form['tags'].split(','))
+    if tag_filter:
+        print tag_filter
+        session['tags'] = tag_filter
+    return redirect('/')
 
 
 
