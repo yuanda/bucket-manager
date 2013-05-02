@@ -51,7 +51,6 @@ def show_bucket():
 
     if 'tags' in session:
         bucket_list = getBuckets(session['tags'])
-        del session['tags']
     else:
         bucket_list = getBuckets()
     if not bucket_list:
@@ -73,13 +72,21 @@ def show_bucket():
         edges = bucket_data.dumpEdges()
         centrality = bucket_data.dumpCentrality()
         bucket_stats = bucket_data.dumpStats()
+
+        centrality_scores = centrality.values()
+        topic_range = max(centrality_scores)
+        cohesion = sum(centrality_scores) / len(centrality_scores)
+
     else:
         keywords = []
         edges = []
-        centrality = []
+        centrality = {}
         bucket_stats = {}
 
-    bucket_stats.update({'SIZE__':len(keywords)})
+        topic_range = 0.0
+        cohesion = 0.0
+
+    bucket_stats.update({'SIZE__':len(keywords), 'RANGE__':'%.2f' % topic_range, 'COHESION__':'%.2f' % cohesion})
     if not 'REACH__' in bucket_stats:
         bucket_stats['REACH__'] = 'unknown'
 

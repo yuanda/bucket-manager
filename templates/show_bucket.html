@@ -116,8 +116,8 @@
                     </div>
                 </form>
             </div>
-            <div id="keyword_list" style="position:absolute; top:80px; height:290; width:100%;">
-                    <font size="3" face="HELVETICA" color="#00b0d8">{{ ',   '.join(keywords) }}</font>
+            <div id="keyword_list" style="position:absolute; top:80px; height:290px; width:100%;">
+                <textarea readonly rows=20 cols=50 style="width:425px; height:290px; resize:none; border:none; color:#00b0d8; font-family:Helvetica; font-size:14px;">{{ '#' + '    #'.join(keywords) }}</textarea>
             </div>
         </div>
         <div id="bucket_stats" style="position:absolute; bottom:0px; height:150; width:100%;">
@@ -128,18 +128,18 @@
                     <font size="5" face="HELVETICA" color="#00b0d8">{{ selected_bucket["REACH__"] }}</font>
                 </td>
                 <td width=215 align="center">
-                    <font size="3" face="HELVETICA" color="#000000">---</font><br/>
-                    <font size="5" face="HELVETICA" color="#00b0d8">---</font>
+                    <font size="3" face="HELVETICA" color="#000000">cohesion</font><br/>
+                    <font size="5" face="HELVETICA" color="#00b0d8">{{ selected_bucket["COHESION__"] }}</font>
                 </td>
             </tr>
             <tr height=70>
                 <td width=215 align="center">
-                    <font size="3" face="HELVETICA" color="#000000">size (max 50)</font><br/>
-                    <font size="5" face="HELVETICA" color={% if selected_bucket["SIZE__"] <= 50 %}"#00b0d8"{% else %}"#e33c47"{% endif %}>{{ selected_bucket["SIZE__"] }}</font>
+                    <font size="3" face="HELVETICA" color="#000000">size (max 200)</font><br/>
+                    <font size="5" face="HELVETICA" color={% if selected_bucket["SIZE__"] <= 200 %}"#00b0d8"{% else %}"#e33c47"{% endif %}>{{ selected_bucket["SIZE__"] }}</font>
                 </td>
                 <td width=215 align="center">
-                    <font size="3" face="HELVETICA" color="#000000">---</font><br/>
-                    <font size="5" face="HELVETICA" color="#00b0d8">----</font>
+                    <font size="3" face="HELVETICA" color="#000000">topic range</font><br/>
+                    <font size="5" face="HELVETICA" color="#00b0d8">{{ selected_bucket["RANGE__"] }}</font>
                 </td>
             </tr>
         </table>
