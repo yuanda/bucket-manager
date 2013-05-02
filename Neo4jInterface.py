@@ -10,7 +10,7 @@ from BucketStructure import *
 ## error handler for cypher queries
 ## should probably do something with this
 def errorHandler(e):
-    pass
+    print type(e), e.message
 
 
 ## connects to the neo4j database and returns a handle
@@ -25,12 +25,11 @@ def getDBhandle():
 
 
 ## keeps trying to connect until it can
-def submit_query(db, query, row_handler=None):
+def submit_query(db, query, error_handler=errorHandler):
     print query
     while True:
         try:
-            cypher.execute(db, query, row_handler=row_handler, error_handler=errorHandler)
-            return
+            return cypher.execute(db, query, error_handler=errorHandler)
         except Exception as e:
             print type(e), e.message
 
@@ -39,21 +38,19 @@ def submit_query(db, query, row_handler=None):
 def loadBucket(bucket_name):
     db = getDBhandle()
 
-    bucket = []
-    def bucket_stat_handler(row):
-        bucket_structure = BucketStructure()
-        bucket_structure.loadStructure(row[0].get_properties())
-        bucket.append(bucket_structure)
-
-    query = 'START b=node:buckets("bucket:' + re.sub('[ ()]', '?', bucket_name) + '") ' \
+    query = 'START b=node:buckets("bucket:' + re.sub('[^A-z0-9]', '?', bucket_name) + '") ' \
           + 'WHERE has(b.NAME__) ' \
-          + 'RETURN b' \
+          + 'RETURN b;' \
 
-    submit_query(db, query, row_handler=bucket_stat_handler)
+    bucket, metadata = submit_query(db, query)
     if bucket:
-        bucket = bucket[0]
+        bucket = bucket[0][0]
+        bucket_structure = BucketStructure()
+        bucket_structure.loadStructure(bucket.get_properties())
+    else:
+        print 'no bucket!'
 
-    return bucket
+    return bucket_structure
 
 
 ## saves a bucket with the given name, tags, and structure
@@ -89,22 +86,18 @@ def getBuckets(tags=[]):
     db = getDBhandle()
 
     bucket_names = set([])
-    def row_handler(row):
-        bucket_names.add(str(row[0]))
 
     ## filtered list
     if tags:
-        tmp_names = set([])
         bucket_names = set([])
-        def row_handler(row):
-            tmp_names.add(str(row[0]))
 
         for tag in tags:
             query = 'START t=node:tags("tag:' + tag + '") ' \
                   + 'MATCH t-[:TAGS]->b ' \
                   + 'WHERE has(b.NAME__) ' \
                   + 'RETURN b.NAME__;'
-            submit_query(db, query, row_handler=row_handler)
+            tmp_names, metadata = submit_query(db, query)
+            tmp_names = map(lambda k: str(k[0]), tmp_names)
 
             if bucket_names:
                 bucket_names = bucket_names & tmp_names
@@ -117,10 +110,9 @@ def getBuckets(tags=[]):
     ## all buckets
     else:
         bucket_names = []
-        def row_handler(row):
-            bucket_names.append(str(row[0]))
         query = 'START b=node:buckets("bucket:*") WHERE has(b.NAME__) return b.NAME__'
-        submit_query(db, query, row_handler=row_handler)
+        bucket_names, metadata = submit_query(db, query)
+        bucket_names = map(lambda k: str(k[0]), bucket_names)
 
     bucket_names.sort()
     return bucket_names

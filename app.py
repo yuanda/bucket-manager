@@ -49,7 +49,6 @@ def checkAuth():
 def show_bucket():
 ##    checkAuth()
 
-
     if 'tags' in session:
         bucket_list = getBuckets(session['tags'])
         del session['tags']
@@ -63,7 +62,6 @@ def show_bucket():
            session['selected_bucket'] in bucket_list:
             selected_bucket = session['selected_bucket']
             del session['selected_bucket']
-            print 'out with the old!'
         else:
             selected_bucket = choice(bucket_list)
     else:
