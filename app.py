@@ -82,9 +82,9 @@ def show_bucket():
         topic_range = sum(edge_scores[0:n_longest_edges]) / float(n_longest_edges)
         cohesion = 100 * len(centrality_scores) / sum(centrality_scores)
 
-        max_size = max(35.0, 35.0 * 15. / (cohesion *len(centrality_scores)))
+        max_size = min(50.0, 50.0 * 4. / (sqrt(len(centrality_scores))))
         min_centrality = min(centrality_scores)
-        cloud_data = map(lambda k: {"text":k, "size":max_size * pow(min_centrality / centrality[k], 2)}, centrality)
+        cloud_data = map(lambda k: {"text":k, "size":max_size * pow(min_centrality / centrality[k], 1.25)}, centrality)
 
         list_data = '\n'.join(map(lambda k: ('%.3f' % (1.0 / k[1]))[1:] + '\t\t' + k[0], sorted(centrality.items(), key=lambda j: j[1])))
     else:
