@@ -38,10 +38,10 @@
                 <font size="3" face="HELVETICA" color="#000000">Email</font><br/>
                 <input type="text" style="height:20px; width:100%;">
             </div>
-            <div id="export_button" align="center" style="position:absolute; bottom:10px; left:0px; height:20px; width:100px; background-color:#00b0d8; border-radius:5px;">
+            <div id="export_button" align="center" onmouseover="this.style.cursor='pointer'" style="position:absolute; bottom:10px; left:0px; height:20px; width:100px; background-color:#00b0d8; border-radius:5px; cursor:default;">
                 <span style="position:relative; line-height:20px;"><font size="3" face="HELVETICA" color="#FFFFFF">Export</font></span>
             </div>
-            <div id="hide_export_button" align="center" onclick="drawExport(false);" style="position:absolute; bottom:10px; right:0px; height:20px; width:100px; background-color:#00b0d8; border-radius:5px;">
+            <div id="hide_export_button" align="center" onmouseover="this.style.cursor='pointer'" onclick="drawExport(false);" style="position:absolute; bottom:10px; right:0px; height:20px; width:100px; background-color:#00b0d8; border-radius:5px; cursor:default;">
                 <span style="position:relative; line-height:20px;"><font size="3" face="HELVETICA" color="#FFFFFF">Nevermind</font></span>
             </div>
         </form>
@@ -53,16 +53,16 @@
         <div id="plot_controller" style="position:absolute; top:70px; left:10px; width:200px; height:480px;">
         <table>
             <tr height=120><td style="vertical-align:middle">
-                <img onclick="showVis(0);" src="https://dl.dropboxusercontent.com/u/95202067/word_cloud.png" style="width:200px;">
+                <img onclick="showVis(0);" onmouseover="this.style.cursor='pointer'" src="https://dl.dropboxusercontent.com/u/95202067/word_cloud.png" style="width:200px; cursor:default;">
             </td></tr>
             <tr height=120 valign="middle"><td style="vertical-align:middle">
-                <img onclick="showVis(1);" src="https://dl.dropboxusercontent.com/u/95202067/relation_web.png" style="width:200px;">
+                <img onclick="showVis(1);" onmouseover="this.style.cursor='pointer'" src="https://dl.dropboxusercontent.com/u/95202067/relation_web.png" style="width:200px; cursor:default;">
             </td></tr>
             <tr height=120 valign="middle"><td style="vertical-align:middle">
-                <img onclick="showVis(2);" src="https://dl.dropboxusercontent.com/u/95202067/relevance_list.png" style="width:200px;">
+                <img onclick="showVis(2);" onmouseover="this.style.cursor='pointer'" src="https://dl.dropboxusercontent.com/u/95202067/relevance_list.png" style="width:200px; cursor:default;">
             </td></tr>
             <tr height=120 valign="middle"><td style="vertical-align:middle">
-                <img src="https://dl.dropboxusercontent.com/u/95202067/export.png" style="width:200px;" onclick="drawExport(true);">
+                <img onclick="drawExport(true);" onmouseover="this.style.cursor='pointer'" src="https://dl.dropboxusercontent.com/u/95202067/export.png" style="width:200px; cursor:default;">
             </td></tr>
         </table>
         </div>
@@ -85,10 +85,10 @@
                     <textarea name="new_bucket_contents" rows=17 cols=50 style="width:420px; resize:none;"></textarea><br/>
                 </div>
                 <div id="new_bucket_button_line" style="position:absolute; bottom:10px; height:20px; width:100%; left:0px;">
-                    <div align="center" onclick="submitForm('new_bucket_form');" style="position:absolute; left:0px; top:0px; height:20px; width:120px; border-radius:5px; background-color:#00b0d8;">
+                    <div align="center" onclick="submitForm('new_bucket_form');" onmouseover="this.style.cursor='pointer'" style="cursor:default; position:absolute; left:0px; top:0px; height:20px; width:120px; border-radius:5px; background-color:#00b0d8;">
                         <span style="position:relative; line-height:20px;"><font size="3" face="HELVETICA" color="#FFFFFF">Save Bucket</font></span>
                     </div>
-                    <div align="center" onclick="drawMenu(false);" style="position:absolute; right:10px; top:0px; height:20px; width:120px; border-radius:5px; background-color:#00b0d8;">
+                    <div align="center" onclick="drawMenu(false);" onmouseover="this.style.cursor='pointer'" style="cursor:default; position:absolute; right:10px; top:0px; height:20px; width:120px; border-radius:5px; background-color:#00b0d8;">
                         <span style="position:relative; line-height:20px;"><font size="3" face="HELVETICA" color="#FFFFFF">Nevermind</font></span>
                     </div>
                 </div>
@@ -104,7 +104,7 @@
                         {% endfor %}
                     </select>
                 </form>
-                <div align="center" onclick="drawMenu(true);" style="position:absolute; right:5px; top:0px; height:20px; width:60px; border-radius:5px; background-color:#00b0d8;">
+                <div align="center" onclick="drawMenu(true);" onmouseover="this.style.cursor='pointer'" style="cursor:default; position:absolute; right:5px; top:0px; height:20px; width:60px; border-radius:5px; background-color:#00b0d8;">
                     <span style="position:relative; line-height:20px;"><font size="3" face="HELVETICA" color="#FFFFFF">New</font></span>
                 </div>
                 <br/>
@@ -113,7 +113,7 @@
                 <form id="tag_filter_form" action="/filter/" method="post">
                     <font size="4" face="HELVETICA" color="#000000">Tags</font>
                     <input type="text" value="{{ selected_bucket['TAGS__']  }}" style="position:absolute; right:70px; width:285px;" name="tags" id="tags">
-                    <div align="center" onclick="submitForm('tag_filter_form');" style="position:absolute; right:5px; top:0px; height:20px; width:60px; border-radius:5px; background-color:#00b0d8;">
+                    <div align="center" onclick="submitForm('tag_filter_form');" onmouseover="this.style.cursor='pointer'" style="cursor:default; position:absolute; right:5px; top:0px; height:20px; width:60px; border-radius:5px; background-color:#00b0d8;">
                         <span style="position:relative; line-height:20px;"><font size="3" face="HELVETICA" color="#FFFFFF">Filter</font></span>
                     </div>
                 </form>
