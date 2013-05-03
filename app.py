@@ -15,6 +15,7 @@ from werkzeug import secure_filename
 import json
 import os
 from random import choice
+from math import *
 
 ## local modules
 from Neo4jInterface import *
@@ -81,11 +82,17 @@ def show_bucket():
         topic_range = sum(edge_scores[0:n_longest_edges]) / float(n_longest_edges)
         cohesion = sum(centrality_scores) / len(centrality_scores)
 
+        max_size = max(35.0, 35.0 * cohesion / len(centrality_scores))
+        max_centrality = max(centrality_scores)
+        cloud_data = map(lambda k: {"text":k, "size":max_size * pow(centrality[k] / max_centrality, 1.5)}, centrality)
+
     else:
         keywords = []
         edges = []
         centrality = {}
         bucket_stats = {}
+
+        cloud_data = {}
 
         topic_range = 0.0
         cohesion = 0.0
@@ -98,7 +105,8 @@ def show_bucket():
                                                bucket_list=bucket_list, \
                                                keywords=keywords, \
                                                keyword_centrality=centrality, \
-                                               keyword_edges=edges \
+                                               keyword_edges=edges, \
+                                               cloud_data = json.dumps(cloud_data)
                           )
 
 

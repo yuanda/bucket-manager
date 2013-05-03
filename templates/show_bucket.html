@@ -2,7 +2,9 @@
 <head>
     <html style="background-color:#ffffff">
     <link rel="icon" type="image/png" href="https://dl.dropboxusercontent.com/u/95202067/blue_logo.png">
-    <script src="http://d3js.org/d3.v2.js"></script>
+    <script src="https://dl.dropboxusercontent.com/u/95202067/d3/d3.js"></script>
+    <script src="https://dl.dropboxusercontent.com/u/95202067/d3/d3.layout.cloud.js"></script>
+    <script src="https://dl.dropboxusercontent.com/u/95202067/d3/word_cloud.js"></script>
 </head>
 <body>
 <div style="position:absolute; min-width:1200px; height:530px; width:99%;">
@@ -51,13 +53,13 @@
         <div id="plot_controller" style="position:absolute; top:70px; left:10px; width:200px; height:480px;">
         <table>
             <tr height=120><td style="vertical-align:middle">
-                <img src="https://dl.dropboxusercontent.com/u/95202067/word_cloud.png" style="width:200px;">
+                <img onclick="showVis(0);" src="https://dl.dropboxusercontent.com/u/95202067/word_cloud.png" style="width:200px;">
             </td></tr>
             <tr height=120 valign="middle"><td style="vertical-align:middle">
-                <img src="https://dl.dropboxusercontent.com/u/95202067/relation_web.png" style="width:200px;">
+                <img onclick="showVis(1);" src="https://dl.dropboxusercontent.com/u/95202067/relation_web.png" style="width:200px;">
             </td></tr>
             <tr height=120 valign="middle"><td style="vertical-align:middle">
-                <img src="https://dl.dropboxusercontent.com/u/95202067/relevance_list.png" style="width:200px;">
+                <img onclick="showVis(2);" src="https://dl.dropboxusercontent.com/u/95202067/relevance_list.png" style="width:200px;">
             </td></tr>
             <tr height=120 valign="middle"><td style="vertical-align:middle">
                 <img src="https://dl.dropboxusercontent.com/u/95202067/export.png" style="width:200px;" onclick="drawExport(true);">
@@ -65,7 +67,7 @@
         </table>
         </div>
     </div>
-    <div id="keyword_plot" style="position:relative; margin-left:24%; top:50px; width:450; height:475px; border:1px solid blue;">
+    <div id="keyword_plot" style="position:relative; margin-left:24%; top:50px; width:450; height:475px;">
     </div>
     <div id="bucket" style="position:absolute; top:20px; right:20px; width:430px; height:550px;">
         <div id="new_bucket" style="position:absolute; top:-500px; height:400px; width:430px; left:0px; z-index:9000; background-color:#ffffff;">
@@ -80,7 +82,7 @@
                 </div>
                 <div id="new_bucket_content_line" style="position:absolute; top:70px; height:250px; width:100%; left:0px;">
                     <font size="4" face="HELVETICA" color="#000000">Contents</font><br/>
-                    <textarea name="new_bucket_contents" rows=15 cols=50 style="width:420px; resize:none;"></textarea><br/>
+                    <textarea name="new_bucket_contents" rows=17 cols=50 style="width:420px; resize:none;"></textarea><br/>
                 </div>
                 <div id="new_bucket_button_line" style="position:absolute; bottom:10px; height:20px; width:100%; left:0px;">
                     <div align="center" onclick="submitForm('new_bucket_form');" style="position:absolute; left:0px; top:0px; height:20px; width:120px; border-radius:5px; background-color:#00b0d8;">
@@ -176,6 +178,23 @@
             document.getElementById(formid).submit()
         }
 
+        function showVis(visType) {
+            switch(visType) {
+              case 0:
+                makeCloud({{ cloud_data | safe }}, "keyword_plot");
+                break;
+
+              case 1:
+                alert("web");
+                break;
+
+              case 2:
+                alert("list");
+                break;
+            }
+        }
+
+        showVis(0);
     </script>
 </div>
 </body>
