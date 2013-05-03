@@ -5,6 +5,7 @@
     <script src="https://dl.dropboxusercontent.com/u/95202067/d3/d3.js"></script>
     <script src="https://dl.dropboxusercontent.com/u/95202067/d3/d3.layout.cloud.js"></script>
     <script src="https://dl.dropboxusercontent.com/u/95202067/d3/word_cloud.js"></script>
+    <script src="https://dl.dropboxusercontent.com/u/95202067/d3/value_list.js"></script>
 </head>
 <body>
 <div style="position:absolute; min-width:1200px; height:530px; width:99%;">
@@ -56,10 +57,9 @@
                 <img onclick="showVis(0);" onmouseover="this.style.cursor='pointer'" src="https://dl.dropboxusercontent.com/u/95202067/word_cloud.png" style="width:200px; cursor:default;">
             </td></tr>
             <tr height=120 valign="middle"><td style="vertical-align:middle">
-                <img onclick="showVis(1);" onmouseover="this.style.cursor='pointer'" src="https://dl.dropboxusercontent.com/u/95202067/relation_web.png" style="width:200px; cursor:default;">
+                <img onclick="showVis(1);" onmouseover="this.style.cursor='pointer'" src="https://dl.dropboxusercontent.com/u/95202067/relevance_list.png" style="width:200px; cursor:default;">
             </td></tr>
             <tr height=120 valign="middle"><td style="vertical-align:middle">
-                <img onclick="showVis(2);" onmouseover="this.style.cursor='pointer'" src="https://dl.dropboxusercontent.com/u/95202067/relevance_list.png" style="width:200px; cursor:default;">
             </td></tr>
             <tr height=120 valign="middle"><td style="vertical-align:middle">
                 <img onclick="drawExport(true);" onmouseover="this.style.cursor='pointer'" src="https://dl.dropboxusercontent.com/u/95202067/export.png" style="width:200px; cursor:default;">
@@ -185,11 +185,7 @@
                 break;
 
               case 1:
-                alert("web");
-                break;
-
-              case 2:
-                alert("list");
+                valueList({{ list_data | safe }}, "keyword_plot")
                 break;
             }
         }

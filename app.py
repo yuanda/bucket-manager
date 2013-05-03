@@ -80,12 +80,13 @@ def show_bucket():
 
         n_longest_edges = int(nedges/10)
         topic_range = sum(edge_scores[0:n_longest_edges]) / float(n_longest_edges)
-        cohesion = sum(centrality_scores) / len(centrality_scores)
+        cohesion = 100 * len(centrality_scores) / sum(centrality_scores)
 
-        max_size = max(35.0, 35.0 * cohesion / len(centrality_scores))
-        max_centrality = max(centrality_scores)
-        cloud_data = map(lambda k: {"text":k, "size":max_size * pow(centrality[k] / max_centrality, 1.5)}, centrality)
+        max_size = max(35.0, 35.0 * 15. / (cohesion *len(centrality_scores)))
+        min_centrality = min(centrality_scores)
+        cloud_data = map(lambda k: {"text":k, "size":max_size * pow(min_centrality / centrality[k], 2)}, centrality)
 
+        list_data = '\n'.join(map(lambda k: ('%.3f' % (1.0 / k[1]))[1:] + '\t\t' + k[0], sorted(centrality.items(), key=lambda j: j[1])))
     else:
         keywords = []
         edges = []
@@ -93,11 +94,12 @@ def show_bucket():
         bucket_stats = {}
 
         cloud_data = {}
+        list_data = ""
 
         topic_range = 0.0
         cohesion = 0.0
 
-    bucket_stats.update({'SIZE__':len(keywords), 'RANGE__':'%.2f' % topic_range, 'COHESION__':'%.2f' % cohesion})
+    bucket_stats.update({'SIZE__':len(keywords), 'RANGE__':'%.1f' % topic_range, 'COHESION__':('%.0f' % cohesion)+'%'})
     if not 'REACH__' in bucket_stats:
         bucket_stats['REACH__'] = 'unknown'
 
@@ -106,7 +108,8 @@ def show_bucket():
                                                keywords=keywords, \
                                                keyword_centrality=centrality, \
                                                keyword_edges=edges, \
-                                               cloud_data = json.dumps(cloud_data)
+                                               cloud_data = json.dumps(cloud_data), \
+                                               list_data = json.dumps(list_data) \
                           )
 
 
