@@ -75,7 +75,6 @@
     </div>
     <div id="keyword_plot" style="position:relative; margin-left:24%; top:50px; width:450px; height:475px;">
     </div>
-    <canvas id="png_canvas" width=450 height=475 style="display:none;"></canvas>
     <div id="bucket" style="position:absolute; top:20px; right:20px; width:430px; height:550px;">
         <div id="new_bucket" style="position:absolute; top:-500px; height:400px; width:430px; left:0px; z-index:9000; background-color:#ffffff;">
             <form id="new_bucket_form" action='/save/' method='post'>
@@ -223,8 +222,8 @@
         }
 
         function svg2png (canvas_name) {
-            canvg('png_canvas', $('#keyword_canvas').html());
-            var png_canvas = document.getElementById("png_canvas");
+            canvg();
+            var png_canvas = $("#keyword_plot").find('canvas')[0];
             var img = png_canvas.toDataURL("image/png");
             return img;
         }
