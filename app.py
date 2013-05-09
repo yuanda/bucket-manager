@@ -209,7 +209,7 @@ def export_data():
 
     sendEmail(email_data, email_to, subjectline=bucket_name + ' data')
 
-    return ''
+    return redirect('/')
 
 
 if __name__ == '__main__':
