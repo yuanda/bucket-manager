@@ -213,7 +213,10 @@
                 alert("exporting relevance list");
             }
             if ($.inArray('csv', to_export) != -1) {
-                alert("exporting csv");
+
+                // TODO: create csv to export
+
+                export_data["csv"] = "";
             }
             $.post("/export/", export_data);
 
