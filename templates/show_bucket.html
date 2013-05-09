@@ -2,6 +2,14 @@
 <head>
     <html style="background-color:#ffffff">
     <link rel="icon" type="image/png" href="https://dl.dropboxusercontent.com/u/95202067/blue_logo.png">
+
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/rgbcolor.js"></script> 
+    <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/StackBlur.js"></script>
+    <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/canvg.js"></script>
+
+    <script src="https://raw.github.com/ebidel/filer.js/master/src/filer.js"></script>
+
     <script src="https://dl.dropboxusercontent.com/u/95202067/d3/d3.js"></script>
     <script src="https://dl.dropboxusercontent.com/u/95202067/d3/d3.layout.cloud.js"></script>
     <script src="https://dl.dropboxusercontent.com/u/95202067/d3/word_cloud.js"></script>
@@ -35,9 +43,9 @@
             </div>
             <div id="export_email_line" style="position:absolute; top:370px; height:40px; width:100%; left:0px;">
                 <font size="3" face="HELVETICA" color="#000000">Email</font><br/>
-                <input type="text" style="height:20px; width:100%;">
+                <input id="emailto" type="text" style="height:20px; width:100%;">
             </div>
-            <div id="export_button" align="center" onmouseover="this.style.cursor='pointer'" style="position:absolute; bottom:10px; left:0px; height:20px; width:100px; background-color:#00b0d8; border-radius:5px; cursor:default;">
+            <div id="export_button" align="center" onclick="exportData();" onmouseover="this.style.cursor='pointer'" style="position:absolute; bottom:10px; left:0px; height:20px; width:100px; background-color:#00b0d8; border-radius:5px; cursor:default;">
                 <span style="position:relative; line-height:20px;"><font size="3" face="HELVETICA" color="#FFFFFF">Export</font></span>
             </div>
             <div id="hide_export_button" align="center" onmouseover="this.style.cursor='pointer'" onclick="drawExport(false);" style="position:absolute; bottom:10px; right:0px; height:20px; width:100px; background-color:#00b0d8; border-radius:5px; cursor:default;">
@@ -47,7 +55,7 @@
     </div>
     <div id="menu_bar" style="position:absolute; top:10px; left:15px; width:250px; height:550px;">
         <div id="title_bar" style="position:absolute; top:10px; left:5px; width:100%; height:100px;">
-            <img src="https://dl.dropboxusercontent.com/u/95202067/adaptly_logo_web600px.png" style="width:200px;">
+            <img id="adaptly_logo" src="https://dl.dropboxusercontent.com/u/95202067/adaptly_logo_web600px.png" style="width:200px;">
         </div>
         <div id="plot_controller" style="position:absolute; top:70px; left:10px; width:200px; height:480px;">
         <table>
@@ -65,8 +73,9 @@
         </table>
         </div>
     </div>
-    <div id="keyword_plot" style="position:relative; margin-left:24%; top:50px; width:450; height:475px;">
+    <div id="keyword_plot" style="position:relative; margin-left:24%; top:50px; width:450px; height:475px;">
     </div>
+    <canvas id="png_canvas" width=450 height=475 style="display:none;"></canvas>
     <div id="bucket" style="position:absolute; top:20px; right:20px; width:430px; height:550px;">
         <div id="new_bucket" style="position:absolute; top:-500px; height:400px; width:430px; left:0px; z-index:9000; background-color:#ffffff;">
             <form id="new_bucket_form" action='/save/' method='post'>
@@ -186,6 +195,38 @@
                 valueList({{ list_data | safe }}, "keyword_plot")
                 break;
             }
+        }
+
+        function exportData () {
+            var export_data = {};
+
+            export_data["emailto"] = $("#emailto").val();
+            export_data["bucketname"] = $("#bucket_menu").val();
+
+            var to_export = [];
+            $(':checkbox:checked').each(function(i) { to_export.push($(this).val()); });
+
+            if ($.inArray('word_cloud', to_export) != -1) {
+                showVis(0);
+                export_data["word_cloud"] = svg2png("#keyword_plot");
+            }
+            if ($.inArray('relevance_list', to_export) != -1) {
+                alert("exporting relevance list");
+            }
+            if ($.inArray('csv', to_export) != -1) {
+                alert("exporting csv");
+            }
+            $.post("/export/", export_data);
+
+            drawExport(false);
+            showVis(0);
+        }
+
+        function svg2png (canvas_name) {
+            canvg('png_canvas', $('#keyword_canvas').html());
+            var png_canvas = document.getElementById("png_canvas");
+            var img = png_canvas.toDataURL("image/png");
+            return img;
         }
 
         showVis(0);

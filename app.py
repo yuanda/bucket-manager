@@ -16,6 +16,11 @@ import json
 import os
 from random import choice
 from math import *
+from smtplib import *
+from email.mime.text import MIMEText
+import email
+import re
+from base64 import *
 
 ## local modules
 from Neo4jInterface import *
@@ -44,6 +49,48 @@ def checkAuth():
         return redirect('http://data-dashboard.herokuapp.com')
 
     updateSession(session['access_token'], session['auth_level'])
+
+
+def parseEmail(emailstr):
+    print emailstr, 'input'
+    pattern = '[A-z0-9._%-]+@[A-z0-9.-]+\.[A-z]{2,4}'
+    return re.findall(pattern, emailstr)
+
+
+def sendEmail(content, recips, subjectline="results from twitter-xray"):
+    errors = []
+
+    for emailto in recips:
+        ## emails the data using lextarget.adaptly@gmail.com to send messages
+        user = 'lextarget.adaptly@gmail.com'
+        pwd = 'lexmemaybe'
+        server = SMTP('smtp.gmail.com', 587)
+        server.ehlo()
+        server.starttls()
+        server.login(user, pwd)
+
+        msg = email.MIMEMultipart.MIMEMultipart()
+        msg['Subject'] = subjectline
+        msg['From'] = user
+        msg['To'] = emailto
+
+        for filename in content:
+            attachment = email.mime.base.MIMEBase('application', 'octect-stream')
+            attachment.set_payload(content[filename])
+            email.encoders.encode_base64(attachment)
+            attachment.add_header('Content-Disposition', 'attachment;filename=' + filename)
+            msg.attach(attachment)
+
+        try:
+            server.sendmail(user, emailto, msg.as_string())
+        except Exception as e:
+            errors.append(e.message)
+
+    server.close()
+    return errors
+
+
+#### BEGIN APP ####
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -144,6 +191,25 @@ def filter_bucket_list():
         session['tags'] = tag_filter
     return redirect('/')
 
+
+@app.route('/export/', methods=['POST'])
+def export_data():
+    export_data = dict(request.form)
+
+    email_to = parseEmail(export_data["emailto"][0])
+    del export_data["emailto"]
+
+    bucket_name = export_data["bucketname"][0]
+    bucket_tag = re.sub(' ', '_', bucket_name)
+    del export_data["bucketname"]
+
+    email_data = {}
+    if 'word_cloud' in export_data:
+        email_data[bucket_tag + '_CLOUD.png'] = b64decode(export_data['word_cloud'][0].split(',')[1])
+
+    sendEmail(email_data, email_to, subjectline=bucket_name + ' data')
+
+    return ''
 
 
 if __name__ == '__main__':
