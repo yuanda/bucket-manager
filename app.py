@@ -25,6 +25,7 @@ from base64 import *
 ## local modules
 from Neo4jInterface import *
 from AuthInterface import *
+from StatsInterface import *
 from BucketStructure import *
 
 
@@ -116,37 +117,51 @@ def show_bucket():
 
     bucket_data = loadBucket(selected_bucket)
     if bucket_data:
+        keywords_hash = bucket_data.getHash()
+        stats_fetcher = StatsFetcher(keywords_hash, ['CPC', 'CPM', 'CTR'])
+
         keywords = bucket_data.getWords()
-        edges = bucket_data.dumpEdges()
+##        edges = bucket_data.dumpEdges()
         centrality = bucket_data.dumpCentrality()
         bucket_stats = bucket_data.dumpStats()
 
         centrality_scores = centrality.values()
-        edge_scores = sorted(edges.values(), reverse=True)
-        nedges = len(edge_scores)
 
-        n_longest_edges = int(nedges/10) + 1
-        topic_range = sum(edge_scores[0:n_longest_edges]) / float(n_longest_edges)
-        cohesion = 100 * len(centrality_scores) / sum(centrality_scores)
+##        edge_scores = sorted(edges.values(), reverse=True)
+##        nedges = len(edge_scores)
+
+##        n_longest_edges = int(nedges/10) + 1
+##        topic_range = sum(edge_scores[0:n_longest_edges]) / float(n_longest_edges)
+##        cohesion = 100 * len(centrality_scores) / sum(centrality_scores)
 
         max_size = min(50.0, 50.0 * 4. / (sqrt(len(centrality_scores))))
         min_centrality = min(centrality_scores)
         cloud_data = map(lambda k: {"text":k, "size":max_size * pow(min_centrality / centrality[k], 1.25)}, centrality)
 
         list_data = '\n'.join(map(lambda k: ('%.3f' % (1.0 / k[1]))[1:] + '\t\t' + k[0], sorted(centrality.items(), key=lambda j: j[1])))
+
+        historic_stats = stats_fetcher.getStats()
+        if 'CPC' in historic_stats:
+            historic_stats['CPC'] = "$%.2f" % (historic_stats['CPC'] / 100)
+        if 'CPM' in historic_stats:
+            historic_stats['CPM'] = "$%.2f" % (historic_stats['CPM'] / 100)
+        if 'CTR' in historic_stats:
+            historic_stats['CTR'] = '%.3f' % (100 * historic_stats['CTR']) + '%'
     else:
         keywords = []
-        edges = []
+##        edges = []
         centrality = {}
         bucket_stats = {}
 
-        cloud_data = {}
+        cloud_data = []
         list_data = ""
 
-        topic_range = 0.0
-        cohesion = 0.0
+##        topic_range = 0.0
+##        cohesion = 0.0
 
-    bucket_stats.update({'SIZE__':len(keywords), 'RANGE__':'%.1f' % topic_range, 'COHESION__':('%.0f' % cohesion)+'%'})
+        historic_stats = {}
+
+    bucket_stats.update({'SIZE__':len(keywords), 'CTR__':historic_stats.get('CTR', 'unknown'), 'CPC__':historic_stats.get('CPC', 'unknown'), 'CPM__':historic_stats.get('CPM', 'unknown')})
     if not 'REACH__' in bucket_stats:
         bucket_stats['REACH__'] = 'unknown'
 
@@ -154,9 +169,8 @@ def show_bucket():
                                                bucket_list=bucket_list, \
                                                keywords=keywords, \
                                                keyword_centrality=centrality, \
-                                               keyword_edges=edges, \
                                                cloud_data = json.dumps(cloud_data), \
-                                               list_data = json.dumps(list_data) \
+                                               list_data = json.dumps(list_data)
                           )
 
 

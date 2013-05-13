@@ -26,6 +26,10 @@ class BucketStructure:
         return self.words
 
 
+    def getHash(self):
+        return self.structure.get('HASH__', None)
+
+
     def getEdge(self, word0, word1):
         edge_key = self.wordHash(word0, word1)
         return self.structure.get(edge_key, None)
