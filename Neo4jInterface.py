@@ -133,43 +133,29 @@ if __name__ == "__main__":
 
 
     x = BucketStructure(words=[ \
-                                  'cats', \
-                                  'cats kittens', \
-                                  'cats eye', \
-                                  'cats eyes', \
-                                  'kittens', \
-                                  'kitties', \
-                                  'stray cats', \
-                                  'kittens cats', \
-                                  'kitty', \
-                                  'kitty cats', \
-                                  'felines', \
-                                  'feline friends cat sanctuary', \
-                                  'tabby cat', \
-                                  'tabby cats', \
-                                  'tabby', \
-                                  'orange tabby cats', \
-                                  'house cat', \
-                                  'cat house', \
-                                  'cat toys', \
-                                  'calico cats', \
-                                  'tortoiseshell calico cats', \
-                                  'black cats', \
-                                  'siamese cats', \
-                                  'siamese cat', \
-                                  'cat lovers we love our pets', \
-                                  'cat lover', \
-                                  'cat lovers day', \
-                                  'cat lovers', \
-                                  'i love cats', \
-                                  'i love my cat', \
-                                  'we love cats', \
-                                  'petling cat', \
-                                  'cat petting', \
-                                  'petting cats', \
-                                  'petting my cat', \
-                                  'petting my cats'
+                                  "#CPU cache", \
+                                  "#Computer", \
+                                  "#Computer architecture", \
+                                  "#Computer data storage", \
+                                  "#Computer file", \
+                                  "#Computer network", \
+                                  "#Computer programming", \
+                                  "#Computer science", \
+                                  "#Computers", \
+                                  "#Data analysis", \
+                                  "#Engineering", \
+                                  "#Information technology", \
+                                  "#Internet", \
+                                  "#Java (programming language)", \
+                                  "#Java (software platform)", \
+                                  "#Laptop", \
+                                  "#Personal computer", \
+                                  "#Python (programming language)", \
+                                  "#Ruby (programming language)", \
+                                  "#Technology", \
+                                  "#Website", \
+                                  "#World Wide Web"
                               ])
     x.calculateEdges()
-    saveBucket('Pets (Cats)', ['Animals', 'Pets'], x)
+    saveBucket('Computer Science', ['Technology', 'Internet'], x)
 

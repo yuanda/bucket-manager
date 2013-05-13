@@ -30,12 +30,10 @@
                         <td style="vertical-align:middle; width:180px;"><font size="4" face="HELVETICA" color="#000000">Word Cloud</font></td>
                     </tr>
                     <tr height=75>
-                        <td style="vertical-align:middle; width:30px;"><input type="checkbox" style="width:20px; height:20px;" name="selected_exports" value="relevance_list"></td>
-                        <td style="vertical-align:middle; width:180px;"><font size="4" face="HELVETICA" color="#000000">Relevance List</font></td>
-                    </tr>
-                    <tr height=75>
                         <td style="vertical-align:middle; width:30px;"><input type="checkbox" style="width:20px; height:20px;" name="selected_exports" value="csv"></td>
                         <td style="vertical-align:middle; width:180px;"><font size="4" face="HELVETICA" color="#000000">CSV</font></td>
+                    </tr>
+                    <tr height=75>
                     </tr>
                     <tr height=75>
                     </tr>
@@ -184,14 +182,16 @@
             document.getElementById(formid).submit()
         }
 
+        var cloud_data = {{ cloud_data | safe }};
+        var list_data = {{ list_data | safe }};
         function showVis(visType) {
             switch(visType) {
               case 0:
-                makeCloud({{ cloud_data | safe }}, "keyword_plot");
+                makeCloud(cloud_data, "keyword_plot");
                 break;
 
               case 1:
-                valueList({{ list_data | safe }}, "keyword_plot")
+                valueList(list_data, "keyword_plot")
                 break;
             }
         }
@@ -213,10 +213,7 @@
                 alert("exporting relevance list");
             }
             if ($.inArray('csv', to_export) != -1) {
-
-                // TODO: create csv to export
-
-                export_data["csv"] = "";
+                export_data["csv"] = "relevance\t\tkeyword\n" + list_data;
             }
             $.post("/export/", export_data);
 
