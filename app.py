@@ -125,7 +125,7 @@ def show_bucket():
         edge_scores = sorted(edges.values(), reverse=True)
         nedges = len(edge_scores)
 
-        n_longest_edges = int(nedges/10)
+        n_longest_edges = int(nedges/10) + 1
         topic_range = sum(edge_scores[0:n_longest_edges]) / float(n_longest_edges)
         cohesion = 100 * len(centrality_scores) / sum(centrality_scores)
 

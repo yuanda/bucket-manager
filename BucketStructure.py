@@ -3,13 +3,23 @@ from WordRelations import *
 
 ## python modules
 import sys
+import hashlib
+import json
 
 
 class BucketStructure:
 
+    WORD_SEPARATOR = '&$&'
+
     def __init__(self, words=[]):
-        self.words = set(words)
-        self.structure = {'WORDS__':'#'.join(self.words)}
+        self.words = sorted(words)
+
+        tmp = hashlib.md5()
+        tmp.update(json.dumps(self.words))
+        hash_key = tmp.hexdigest()
+
+        self.structure = {'WORDS__':self.WORD_SEPARATOR.join(self.words), 'HASH__':hash_key}
+        self.words = set(self.words)
 
 
     def getWords(self):
@@ -24,14 +34,14 @@ class BucketStructure:
     def setEdge(self, word0, word1, edge_value):
         self.words.add(word0)
         self.words.add(word1)
-        self.structure['WORDS__'] = '#'.join(self.words)
+        self.structure['WORDS__'] = self.WORD_SEPARATOR.join(self.words)
         edge_key = self.wordHash(word0, word1)
         self.structure[edge_key] = edge_value
 
 
     def loadStructure(self, saved_structure):
         self.structure = saved_structure
-        self.words = self.structure.get('WORDS__', '').split('#')
+        self.words = self.structure.get('WORDS__', '').split(self.WORD_SEPARATOR)
 
 
     def dumpStructure(self):
@@ -52,7 +62,7 @@ class BucketStructure:
             for word1 in self.words:
                 if not word0 == word1:
                     edge_length = phrase_dist(word0, word1, verbose=False)
-                    self.structure[self.wordHash(word0, word1)] = phrase_dist(word0, word1, verbose=False)
+                    self.structure[self.wordHash(word0, word1)] = phrase_dist(word0.strip('#'), word1.strip('#'), verbose=False)
                     word0_edge_lengths.append(edge_length)
 
             ## arithmatic mean of distances
