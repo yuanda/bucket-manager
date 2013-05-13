@@ -222,7 +222,7 @@ def export_data():
         email_data[bucket_tag + '_CLOUD.png'] = b64decode(export_data['word_cloud'][0].split(',')[1])
 
     if 'csv' in export_data:
-        email_data[bucket_tag + '.csv'] = export_data['csv'][0]
+        email_data[bucket_tag + '.csv'] = export_data['csv'][0].encode('utf-16')
 
     sendEmail(email_data, email_to, subjectline=bucket_name + ' data')
 
