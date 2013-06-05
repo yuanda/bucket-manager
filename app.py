@@ -36,6 +36,7 @@ app.config['SECRET_KEY'] = 'VKqerq3E/adf23d0444'
 AUTH_LEVEL = 4
 
 
+## verifies login info
 def checkAuth():
     token = request.args.get('token')
     if not token:
@@ -52,17 +53,18 @@ def checkAuth():
     updateSession(session['access_token'], session['auth_level'])
 
 
+## finds all substrings resembling email addresses in a given string
 def parseEmail(emailstr):
     print emailstr, 'input'
     pattern = '[A-z0-9._%-]+@[A-z0-9.-]+\.[A-z]{2,4}'
     return re.findall(pattern, emailstr)
 
 
-def sendEmail(content, recips, subjectline="results from twitter-xray"):
+## sends an email to given recipients with the given files attached
+def sendEmail(content, recips, subjectline="Export from Bucket Manager"):
     errors = []
 
     for emailto in recips:
-        ## emails the data using lextarget.adaptly@gmail.com to send messages
         user = 'lextarget.adaptly@gmail.com'
         pwd = 'lexmemaybe'
         server = SMTP('smtp.gmail.com', 587)
@@ -98,6 +100,7 @@ def sendEmail(content, recips, subjectline="results from twitter-xray"):
 def show_bucket():
 ##    checkAuth()
 
+    ## looks up buckets, filtering for tags if present
     if 'tags' in session:
         bucket_list = getBuckets(session['tags'])
     else:
@@ -106,16 +109,26 @@ def show_bucket():
         bucket_list = ['---']
 
     if request.method == 'GET':
+        ## just saved a bucket, so select that one
         if 'selected_bucket' in session and \
            session['selected_bucket'] in bucket_list:
             selected_bucket = session['selected_bucket']
             del session['selected_bucket']
+
+        ## just filtered or loaded a clean page,
+        ## pick a random bucket from the list
+        ## TODO: pick best bucket from list (define what that means)
         else:
             selected_bucket = choice(bucket_list)
+
+    ## just selected a bucket manually, show that one
     else:
         selected_bucket = request.form['bucket_menu']
 
+    ## loads info about the selected bucket
     bucket_data = loadBucket(selected_bucket)
+
+    ## if there is data, parse it
     if bucket_data:
         keywords_hash = bucket_data.getHash()
         stats_fetcher = StatsFetcher(keywords_hash, ['CPC', 'CPM', 'CTR'])
@@ -147,6 +160,8 @@ def show_bucket():
             historic_stats['CPM'] = "$%.2f" % (historic_stats['CPM'] / 100)
         if 'CTR' in historic_stats:
             historic_stats['CTR'] = '%.3f' % (100 * historic_stats['CTR']) + '%'
+
+    ## if there's no data, set none values
     else:
         keywords = []
 ##        edges = []
@@ -161,10 +176,14 @@ def show_bucket():
 
         historic_stats = {}
 
+    ## add the stats that we just calculated
     bucket_stats.update({'SIZE__':len(keywords), 'CTR__':historic_stats.get('CTR', 'unknown'), 'CPC__':historic_stats.get('CPC', 'unknown'), 'CPM__':historic_stats.get('CPM', 'unknown')})
+
+    ## none value for reach
     if not 'REACH__' in bucket_stats:
         bucket_stats['REACH__'] = 'unknown'
 
+    ## displays page
     return render_template('show_bucket.html', selected_bucket=bucket_stats, \
                                                bucket_list=bucket_list, \
                                                keywords=keywords, \
@@ -174,27 +193,34 @@ def show_bucket():
                           )
 
 
+## endpoint for saving bucket data
 @app.route('/save/', methods=['POST'])
 def save_bucket():
 ##    checkAuth()
 
+    ## reads info about new bucket from form
     bucket_name = request.form['new_bucket_name'].strip()
     tags = request.form['new_bucket_tags'].strip()
     keywords = request.form['new_bucket_contents'].strip()
-    print bucket_name, tags, keywords, 'seen'
 
+    ## filters null values
     tags = filter(lambda j: j, map(lambda k: k.strip().lower(), tags.split(',')))
     keywords = filter(lambda j: j, map(lambda k: k.strip(), keywords.split(',')))
 
+    ## calculates semantic distances among keywords
+    ## and saves the new bucket to the neo4j database
     new_bucket = BucketStructure(keywords)
     new_bucket.calculateEdges()
     saveBucket(bucket_name, tags, new_bucket)
 
+    ## this bucket will be selected on reload
     session['selected_bucket'] = bucket_name
 
+    ## reloads page
     return redirect('/')
 
 
+## endpoint for filtering the bucket list on tags
 @app.route('/filter/', methods=['POST'])
 def filter_bucket_list():
 ##    checkAuth()
@@ -207,6 +233,7 @@ def filter_bucket_list():
     return redirect('/')
 
 
+## endpoint for exporting plots
 @app.route('/export/', methods=['POST'])
 def export_data():
     export_data = dict(request.form)

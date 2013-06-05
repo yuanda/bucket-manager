@@ -4,8 +4,8 @@ AuthInterface.py
     functions for interacting with the dashboard authentication API
 
 BucketStructure.py
-    class for holding a bucket's contents, tags, and name,
-    as well as calculating edges distances using WordRelations.py
+    class for holding a bucket's contents as well as calculating
+    keyword relatedness using WordRelations.py
 
 Neo4jInterface.py
     functions for interacting with the neo4j database that holds
