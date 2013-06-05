@@ -181,6 +181,7 @@ def save_bucket():
     bucket_name = request.form['new_bucket_name'].strip()
     tags = request.form['new_bucket_tags'].strip()
     keywords = request.form['new_bucket_contents'].strip()
+    print bucket_name, tags, keywords, 'seen'
 
     tags = filter(lambda j: j, map(lambda k: k.strip().lower(), tags.split(',')))
     keywords = filter(lambda j: j, map(lambda k: k.strip(), keywords.split(',')))

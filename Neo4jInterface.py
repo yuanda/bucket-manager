@@ -18,9 +18,9 @@ def getDBhandle():
     db = None
     while not (type(db) == neo4j.GraphDatabaseService):
         try:
-            db = neo4j.GraphDatabaseService("http://ec2-107-22-155-191.compute-1.amazonaws.com:7474/db/data/")
+            db = neo4j.GraphDatabaseService("http://ec2-54-226-2-179.compute-1.amazonaws.com:7474/db/data/")
         except Exception as e:
-            print type(e), e.message
+            print type(e)
     return db
 
 
@@ -30,8 +30,10 @@ def submit_query(db, query, error_handler=errorHandler):
     while True:
         try:
             return cypher.execute(db, query, error_handler=errorHandler)
+        except TypeError:
+            return None
         except Exception as e:
-            print type(e), e.message
+            print type(e)
 
 
 ## returns a BucketStructure object for the given bucket name
@@ -42,13 +44,15 @@ def loadBucket(bucket_name):
           + 'WHERE has(b.NAME__) ' \
           + 'RETURN b;' \
 
-    bucket, metadata = submit_query(db, query)
-    if bucket:
+    results = submit_query(db, query)
+    if results:
+        bucket, metadata = results
         bucket = bucket[0][0]
         bucket_structure = BucketStructure()
         bucket_structure.loadStructure(bucket.get_properties())
     else:
         print 'no bucket!'
+        return None
 
     return bucket_structure
 
@@ -111,7 +115,11 @@ def getBuckets(tags=[]):
     else:
         bucket_names = []
         query = 'START b=node:buckets("bucket:*") WHERE has(b.NAME__) return b.NAME__'
-        bucket_names, metadata = submit_query(db, query)
+        results = submit_query(db, query)
+        if not results:
+            return bucket_names
+
+        bucket_names, metadata = results
         bucket_names = map(lambda k: str(k[0]), bucket_names)
 
     bucket_names.sort()
