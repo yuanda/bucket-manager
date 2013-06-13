@@ -7,6 +7,10 @@ from WordRelations import *
 from BucketStructure import *
 
 
+SEMANTIC_WEB_URL = 'http://ec2-54-234-151-173.compute-1.amazonaws.com:7474/db/data'
+BUCKET_MANAGER_URL = 'http://ec2-54-226-2-179.compute-1.amazonaws.com:7474/db/data/'
+
+
 ## error handler for cypher queries
 ## should probably do something with this
 def errorHandler(e):
@@ -14,11 +18,16 @@ def errorHandler(e):
 
 
 ## connects to the neo4j database and returns a handle
-def getDBhandle():
+def getDBhandle(isSemanticWeb=False):
     db = None
+    if isSemanticWeb:
+        db_url = SEMANTIC_WEB_URL
+    else:
+        db_url = BUCKET_MANAGER_URL
+
     while not (type(db) == neo4j.GraphDatabaseService):
         try:
-            db = neo4j.GraphDatabaseService("http://ec2-54-226-2-179.compute-1.amazonaws.com:7474/db/data/")
+            db = neo4j.GraphDatabaseService(db_url)
         except Exception as e:
             print type(e)
     return db
@@ -34,6 +43,18 @@ def submit_query(db, query, error_handler=errorHandler):
             return None
         except Exception as e:
             print type(e)
+
+
+def shortestPath(topic0, topic1):
+    db = getDBhandle(isSemanticWeb=True)
+
+    query = 'START m=node:topics(TOPIC=\'' + topic0 + '\'), ' \
+                + 'n=node:topics(TOPIC=\'' + topic1 + '\') ' \
+          + 'MATCH p=shortestPath(m-[*]-n) ' \
+          + 'RETURN LENGTH(p);'
+
+    topic_dist = submit_query(db, query)
+    return topic_dist 
 
 
 ## returns a BucketStructure object for the given bucket name

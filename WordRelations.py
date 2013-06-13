@@ -1,15 +1,21 @@
+## python modules
 from nltk.corpus import wordnet, wordnet_ic
 from nltk.corpus.reader.wordnet import WordNetError 
 from math import sqrt, pow
 from operator import mul
 
+## local modules
+from dbpedia import *
 
-## WebNet perl library
-##from perlfunc import perlfunc, perlreq, perl5lib
-##@perlfunc
-##@perlreq('semantic_dist.pl')
-##def semantic_dist(word0, word1):
-##    pass
+
+## public db for topic lookup
+TOPIC_LOOKUP_URL = 'http://lookup.dbpedia.org/api'
+
+## adaptly's db for topic lookup
+##TOPIC_LOOKUP_URL = 'http://ec2-50-16-51-14.compute-1.amazonaws.com:1111/api'
+
+## adaptly's semantic web
+SEMANTIC_WEB_URL = 'http://ec2-54-234-151-173.compute-1.amazonaws.com:7474/db/data'
 
 
 ## uses Python NLTK to find semantic distance in WordNet
@@ -62,8 +68,18 @@ def levenshtein_dist(word0, word1):
 ## finds the distances between two phrases using DBpedia
 ## used to identify pop-culture ties between phrases
 def culture_dist(phrase0, phrase1):
-    ## TODO: implement this method
-    return 9999999999999.
+    topics0 = dbpedia_lookup(phrase0, TOPIC_LOOKUP_URL)
+    topics1 = dbpedia_lookup(phrase1, TOPIC_LOOKUP_URL)
+
+    min_dist = None
+    for topic0 in topics0:
+        for topic1 in topics1:
+            this_dist = shortestPath(topic0, topic1)
+
+            if not min_dist or this_dist < min_dist:
+                min_dist = this_dist
+
+    return min_dist
 
 
 ## finds the conceptual distance between two phrases
@@ -74,43 +90,19 @@ def phrase_dist(phrase0, phrase1, verbose=False):
 
     ## finds distance between every pairing
     ## of words from phrase0 to phrase1
-    word_distances = {}
+    word_distances = []
     for word0 in phrase0.split(' '):
         for word1 in phrase1.split(' '):
             this_distance = semantic_dist(word0, word1)
             if not this_distance:
                 this_distance = levenshtein_dist(word0, word1)+1
-            word_distances[(word0, word1)] = this_distance
+            word_distances.append(this_distance)
 
     if verbose:
         print '\n', phrase0, '<--->', phrase1
 
-    ## average distance from words in phrase0 to words in phrase1
-    distances0 = map(lambda word0:  min(map(lambda word1: word_distances[(word0, word1)], phrase1.split())), phrase0.split())
-    ## arithmatic mean
-    distance0 = float(sum(distances0)) / len(distances0)
-    ## geometric mean
-##    distance0 = pow(float(reduce(mul, distances0, 1)), 1.0/len(distances0))
-    if verbose:
-        print '\t', distances0, distance0
-
-    ## average distance from words in phrase1 to words in phrase0
-    distances1 = map(lambda word1:  min(map(lambda word0: word_distances[(word0, word1)], phrase0.split())), phrase1.split())
-    ## arithmatic mean
-    distance1 = float(sum(distances1)) / len(distances1)
-    ## geometric mean
-##    distance1 = pow(float(reduce(mul, distances1, 1)), 1.0/len(distances1))
-    if verbose:
-        print '\t', distances1, distance1
-
-    ## use min of phrase0<->phrase1 word pairing distances
-##    word_pair_distance = min(distance0, distance1)
-
-    ## use geometric mean of phrase0<->phrase1 word pairing distances
-    word_pair_distance = sqrt(distance0 * distance1)
-
-    ## use arithmatic mean of phrase0<->phrase1 word pairing distances
-##    word_pair_distance = (distance0 + distance1) / 2.0
+    ## use arithmatic mean of word pairing distances
+    word_pair_distance = sum(word_distances) / float(len(word_distances))
 
     if verbose:
         print '\t', word_pair_distance
