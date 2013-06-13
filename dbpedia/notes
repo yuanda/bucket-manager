@@ -1,0 +1,44 @@
+"""
+TRIPLE THAT GIVES ME ALL NODES pointing TO American_singers
+    SELECT  ?anynode ?anyrelationship count(*)
+    WHERE {
+        { ?anynode ?anyrelationship <http://dbpedia.org/resource/Category:American_singers> }
+    }
+    group by ?anyrelationship ?anynode
+
+TRIPLE that gives me all nodes pointing out from American_singers
+{ <http://dbpedia.org/resource/Category:American_singers> ?relationship ?node }
+
+UNION is equivalent to OR
+OPTIONAL is equivalent to left join
+. is equivalent to AND (aka join)
+
+FILTER is a restriction on solutions over the whole group in which the filter
+appears
+    PREFIX  dc:  <http://purl.org/dc/elements/1.1/>
+    PREFIX  ns:  <http://example.org/ns#>
+    SELECT  ?title ?price
+    WHERE   { ?x ns:price ?price .
+              FILTER (?price < 30.5)
+              ?x dc:title ?title . }
+
+
+
+the following represent the same query:
+    PREFIX  dc: <http://purl.org/dc/elements/1.1/>
+    SELECT  ?title
+    WHERE   { <http://example.org/book/book1> dc:title ?title }  
+
+    PREFIX  dc: <http://purl.org/dc/elements/1.1/>
+    PREFIX  : <http://example.org/book/>
+
+    SELECT  $title
+    WHERE   { :book1  dc:title  $title }
+
+    BASE    <http://example.org/book/>
+    PREFIX  dc: <http://purl.org/dc/elements/1.1/>
+
+    SELECT  $title
+    WHERE   { <book1>  dc:title  ?title }
+
+"""
